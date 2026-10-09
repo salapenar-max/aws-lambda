@@ -225,13 +225,11 @@ exports.s3Handler = async (event) => {
     
     console.log(`S3 Event: ${eventName} on ${bucket}/${key}`);
     
-    switch (eventName) {
-      case 's3:ObjectCreated:*':
-        await processNewFile(bucket, key);
-        break;
-      case 's3:ObjectRemoved:*':
-        await handleFileRemoval(bucket, key);
-        break;
+    // Event names omit the s3: prefix and contain a specific operation.
+    if (eventName.startsWith('ObjectCreated:')) {
+      await processNewFile(bucket, key);
+    } else if (eventName.startsWith('ObjectRemoved:')) {
+      await handleFileRemoval(bucket, key);
     }
   }
 };
